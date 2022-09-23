@@ -1,34 +1,48 @@
 <script setup>
-import BootcampLogo from "./assets/svg/BootcampLogo.vue"
-import HelloWorld from './components/HelloWorld.vue'
+import data from "../data.json";
+import { ref } from "@vue/reactivity";
+import Header from "./components/Header.vue";
+import Select from "./components/Select.vue";
+import MembersList from "./components/MembersList.vue";
+
+let members = ref(data);
+let selectedGroup = ref("");
+
+let groups = [
+	...new Set(
+		members.value.map((i) => {
+			return i.group;
+		})
+	),
+];
+const selectGroup = (event) => {
+	selectedGroup.value = event;
+	console.log("event :>> ", event);
+	members.value = members.value.filter((i) => i.group === selectedGroup.value);
+};
+
+
 </script>
 
 <template>
-	<div>
-		<BootcampLogo />
-		<br />
-		<a href="https://vitejs.dev" target="_blank">
-			<img src="/vite.svg" class="logo" alt="Vite logo" />
-		</a>
-		<a href="https://vuejs.org/" target="_blank">
-			<img src="/vue.svg" class="logo vue" alt="Vue logo" />
-		</a>
+	<Header />
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-md-6 mx-auto">
+				<div class="card mx-auto">
+					<div class="card-header text-center">
+						<h4>{{ selectedGroup }}</h4>
+					</div>
+					<div class="card-body">
+						<Select @selectGroup="selectGroup($event)" :groups="groups" />
+					</div>
+					<div class="card-body">
+						<MembersList :members="members" />
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<HelloWorld msg="Vite + Vue" />
 </template>
 
-<style scoped>
-.logo {
-	height: 6em;
-	padding: 1.5em;
-	will-change: filter;
-}
-
-.logo:hover {
-	filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-	filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<style scoped></style>
